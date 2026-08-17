@@ -1,0 +1,17 @@
+[
+  {"words_english": "hello", "words_russian": "привет"},
+  {"words_english": "world", "words_russian": "мир"},
+  {"words_english": "database", "words_russian": "база данных"},
+  {"words_english": "connection", "words_russian": "подключение"},
+  {"words_english": "success", "words_russian": "успех"},
+  {"words_english": "error", "words_russian": "ошибка"},
+  {"words_english": "warning", "words_russian": "предупреждение"},
+  {"words_english": "language", "words_russian": "язык"},
+  {"words_english": "variable", "words_russian": "переменная"},
+  {"words_english": "loop", "words_russian": "цикл"},
+  {"words_english": "condition", "words_russian": "условие"},
+  {"words_english": "script", "words_russian": "скрипт"},
+  {"words_english": "framework", "words_russian": "фреймворк"},
+  {"words_english": "table", "words_russian": "таблица"},
+  {"words_english": "user", "words_russian": "пользователь"}
+]
