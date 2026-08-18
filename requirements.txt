@@ -4,8 +4,9 @@ attrs==26.1.0
 blinker==1.9.0
 certifi==2026.7.22
 charset-normalizer==3.4.9
-click==8.4.2
+click==8.1.8
 dotenv==0.9.9
+gTTS==2.5.4
 h11==0.16.0
 httptools==0.8.0
 idna==3.18

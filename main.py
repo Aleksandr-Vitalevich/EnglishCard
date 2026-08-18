@@ -27,6 +27,7 @@ if "is_authenticated" not in st.session_state:
     st.session_state.current_user_name = None
     st.session_state.current_card = None
     st.session_state.cucurrent_for_cards = None
+    st.session_state.current_hero = None
 
 if not st.session_state.is_authenticated:
     autorization_interface(db)

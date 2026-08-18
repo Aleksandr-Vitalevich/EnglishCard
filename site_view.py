@@ -4,6 +4,10 @@ from documentation import *
 from translater import *
 from get_photos_dog_random import *
 import time
+from super_hero_api import *
+from random import randint
+from re import sub
+from gtts import gTTS
 
 def autorization_interface(db) :
     '''Функция авторизации принимает параметры БД'''
@@ -75,19 +79,6 @@ def site_menu_interface(db) :
         if col[i].button(btn["label"],use_container_width=True) :
             st.session_state.menu_page = btn["page"]
             st.rerun()
-    #col1,col2,col3,col4,col5,col6 = st.columns(6)
-    #if col1.button("📖 Изучение",use_container_width=True) :
-    #    st.session_state.menu_page = "study"
-    #if col2.button("➕ Добавить слово",use_container_width=True) :
-    #    st.session_state.menu_page = "add"
-    #if col3.button("🗑️ Удалить слово",use_container_width=True) :
-    #    st.session_state.menu_page = "delete"
-    #if col4.button("📊 Статистика",use_container_width=True) :
-    #    st.session_state.menu_page = "stats"
-    #if col5.button("Документация",use_container_width=True) :
-    #    st.session_state.menu_page = "documentation"
-    #if col6.button("Переводчик",use_container_width=True) :
-    #    st.session_state.menu_page = "translater"
 
     st.divider()
 
@@ -102,7 +93,8 @@ def site_menu_interface(db) :
                 "Выберите режим",
                 options=[
                     "Выбор из 4х вариантов",
-                    "Письменный тест (ввести правильное слово)"
+                    "Письменный тест (ввести правильное слово)",
+                    "Напиши имя героя"
                 ],
                 horizontal=True
             )
@@ -280,7 +272,51 @@ def site_menu_interface(db) :
                     if skip_button.button("Следующее слово ->",use_container_width=True) :
                             st.session_state.current_card = None
                             st.rerun()
+            elif study_choise == "Напиши имя героя" :
+                st.subheader("Имя героя")
+                if st.session_state.current_hero is None :
+                    st.session_state.current_hero = get_info_super_hero(randint(1,731))
+                    st.session_state.wrong_attempts = 0
+                hero_photo = st.session_state.current_hero.get("photo")
+                if hero_photo :
+                    st.image(hero_photo,width=400)
+                else :
+                    st.warning("У этого героя нет фото")
+                st.write("---")
+                st.markdown("### Вы можете прослушать произношение")
+                local_audio_path = "hero_voice.mp3"
+                hero_name = st.session_state.current_hero.get("name","Hero")
+                try :
+                    tts = gTTS(text=hero_name,lang="en")
+                    tts.save(local_audio_path)
+                    with open(local_audio_path,"rb") as audio_file :
+                        audio_b = audio_file.read() 
+                    st.audio(audio_b,format="audio/mp3")
+                except Exception as e :
+                    st.error("Не удалось сформировать озвучку")
+                    print(f"Ошибка gTTS {e}")
+                user_input = st.text_input("Введите имя героя").lower().strip()
+                check_button = st.button("Проверить ответ",use_container_width=True)
+                skip_button = st.button("Следующий герой",use_container_width=True)
+                if check_button :
+                    clear_string1 = sub(r"[^a-z]+",'',st.session_state.current_hero.get("name",'').lower()) 
+                    clear_string2 = sub(r"[^a-z]+",'',user_input)
                     
+                    if clear_string1 == clear_string2 :
+                        st.success(f"Вы ввели верное имя {st.session_state.current_hero.get("name",'')}")
+                        time.sleep(1.5)
+                        st.rerun()
+                    else :
+                        st.session_state.wrong_attempts += 1
+                        if st.session_state.wrong_attempts >= 3 :
+                            st.error(f"Вы ответили не правильно 3 раза ")
+                            st.info(f"Имя героя ***{st.session_state.current_hero.get("name")} ***")
+                        else :
+                            st.error(f"Ошибка. Попробуйте еще раз Попытка {st.session_state.wrong_attempts} из 3")
+                elif skip_button :
+                    st.session_state.current_hero = None 
+                    st.rerun()
+
         case "add" :
             st.subheader("Добавление слова ")
             if st.session_state.current_user_name == "root" :
@@ -420,7 +456,8 @@ def site_menu_interface(db) :
                         "UI : autorization_interface","UI : site_menu_interface",
                         "doc : get_doc_admin","doc : get_ui_documentation",
                         "api : translate_word","api : get_photos_random",
-                        "БД : get_user_words","БД : get_points","БД : get_user_stats"]
+                        "БД : get_user_words","БД : get_points","БД : get_user_stats",
+                        "api : get_info_super_hero"]
                                         )
                     if choise_admin.startswith("БД : ") :
                         clear_string = choise_admin.replace("БД : ",'')
@@ -438,8 +475,8 @@ def site_menu_interface(db) :
                         get_info = func.__doc__ if func else "Функция модуля documentation не найдена"
                     elif choise_admin.startswith("api : ") :
                         clear_string = choise_admin.replace("api : ",'')
-                        import translater,get_photos_dog_random
-                        func = getattr(translater,clear_string,None) or getattr(get_photos_dog_random,clear_string,None)
+                        import translater,get_photos_dog_random,super_hero_api
+                        func = getattr(translater,clear_string,None) or getattr(get_photos_dog_random,clear_string,None) or getattr(super_hero_api,clear_string,None)
                         get_info = func.__doc__ if func else "Функция api не найдена"
                     st.info(get_info)
                 with col2 :
