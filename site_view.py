@@ -8,6 +8,10 @@ from super_hero_api import *
 from random import randint
 from re import sub
 from gtts import gTTS
+from GET_IP import *
+import os
+load_dotenv()
+ipify = os.getenv('IPIFY_TOKEN')
 
 def autorization_interface(db) :
     '''Функция авторизации принимает параметры БД'''
@@ -57,7 +61,21 @@ def site_menu_interface(db) :
     st.sidebar.header("*👤 Профиль*")
     st.sidebar.markdown(f"***Вы вошли как {st.session_state.current_user_name}***")
     st.sidebar.divider()
+    if "current_ip" not in st.session_state or st.session_state.current_ip is None :
+        try :
+            ip_user = GET_IP(ipify)
+            st.session_state.current_ip = ip_user.get_ip()
+            st.session_state.current_city = ip_user.get_city()
+        except Exception as e :
+            st.session_state.current_ip = "127.0.0.1"
+            st.session_state.current_city = "Не определен"
+            print(f"Ошибка IP: {e}")
+    
+    st.sidebar.markdown(f"***Ваш ip {st.session_state.current_ip}***")
+    st.sidebar.markdown(f"***Ваш Город {st.session_state.current_city}***")
     if st.sidebar.button("Выход",use_container_width=True) :
+        st.session_state.current_ip = None
+        st.session_state.current_city = None
         st.session_state.menu_page = "exit"
         st.rerun()
 
@@ -475,7 +493,7 @@ def site_menu_interface(db) :
                         get_info = func.__doc__ if func else "Функция модуля documentation не найдена"
                     elif choise_admin.startswith("api : ") :
                         clear_string = choise_admin.replace("api : ",'')
-                        import translater,get_photos_dog_random,super_hero_api
+                        import translater,get_photos_dog_random,super_hero_api,GET_IP
                         func = getattr(translater,clear_string,None) or getattr(get_photos_dog_random,clear_string,None) or getattr(super_hero_api,clear_string,None)
                         get_info = func.__doc__ if func else "Функция api не найдена"
                     st.info(get_info)
