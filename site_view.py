@@ -12,6 +12,8 @@ from GET_IP import *
 import os
 load_dotenv()
 ipify = os.getenv('IPIFY_TOKEN')
+from YANDEX_DISK import *
+ydt = os.getenv('YANDEX_DISK_TOKEN')
 
 def autorization_interface(db) :
     '''Функция авторизации принимает параметры БД'''
@@ -314,26 +316,53 @@ def site_menu_interface(db) :
                     st.error("Не удалось сформировать озвучку")
                     print(f"Ошибка gTTS {e}")
                 user_input = st.text_input("Введите имя героя").lower().strip()
-                check_button = st.button("Проверить ответ",use_container_width=True)
-                skip_button = st.button("Следующий герой",use_container_width=True)
-                if check_button :
-                    clear_string1 = sub(r"[^a-z]+",'',st.session_state.current_hero.get("name",'').lower()) 
-                    clear_string2 = sub(r"[^a-z]+",'',user_input)
+                if "answer_correct" not in st.session_state :
+                    st.session_state.answer_correct = False
+                if not st.session_state.answer_correct :
+                    check_button = st.button("Проверить ответ",use_container_width=True)
+                    skip_button = st.button("Следующий герой",use_container_width=True)
+                    if check_button :
+                        clear_string1 = sub(r"[^a-z]+",'',st.session_state.current_hero.get("name",'').lower()) 
+                        clear_string2 = sub(r"[^a-z]+",'',user_input)
                     
-                    if clear_string1 == clear_string2 :
-                        st.success(f"Вы ввели верное имя {st.session_state.current_hero.get("name",'')}")
-                        time.sleep(1.5)
-                        st.rerun()
-                    else :
-                        st.session_state.wrong_attempts += 1
-                        if st.session_state.wrong_attempts >= 3 :
-                            st.error(f"Вы ответили не правильно 3 раза ")
-                            st.info(f"Имя героя ***{st.session_state.current_hero.get("name")} ***")
+                        if clear_string1 == clear_string2 :
+                            st.session_state.answer_correct = True
+                            st.rerun()
                         else :
-                            st.error(f"Ошибка. Попробуйте еще раз Попытка {st.session_state.wrong_attempts} из 3")
-                elif skip_button :
-                    st.session_state.current_hero = None 
-                    st.rerun()
+                            st.session_state.wrong_attempts += 1
+                            if st.session_state.wrong_attempts >= 3 :
+                                st.error(f"Вы ответили не правильно 3 раза ")
+                                st.info(f"Имя героя ***{st.session_state.current_hero.get("name")} ***")
+                            else :
+                                st.error(f"Ошибка. Попробуйте еще раз Попытка {st.session_state.wrong_attempts} из 3")
+                    elif skip_button :
+                        st.session_state.current_hero = None 
+                        st.rerun()
+                else :
+                    st.success(f"Вы ввели верное имя {st.session_state.current_hero.get("name",'')}")
+                    save_picture = st.button("Сохранить картинку на яндекс диск",use_container_width=True)
+                    if save_picture :
+                        with st.spinner("Загрузка картинки на облако") :
+                            try :
+                                if isinstance(hero_photo,str) and hero_photo.startswith("http"):
+                                    img_bytes = requests.get(hero_photo).content
+                                else :
+                                    img_bytes = hero_photo
+                                path = f"disk:/Hero/{hero_name}.jpg"
+
+                                save_hero_picture = YandexDiskService(y_token=ydt)
+                                res = save_hero_picture.send_file(img_bytes,path)
+                                if res == 201 or res == 200 :
+                                    st.info("Картинка успешно сохранена на Яндекс диск")
+                                else :
+                                    st.error(f"Ошибка загрузки статус ответа яндекса {res}")
+                            except Exception as e :
+                                st.error(f"Не удалось сохранить файл {e}")
+                    if st.button("Следующий герой",key="next_after_success",use_container_width=True) :
+                        st.session_state.current_hero = None
+                        st.session_state.answer_correct = False
+                        st.rerun()
+                
 
         case "add" :
             st.subheader("Добавление слова ")
@@ -493,7 +522,7 @@ def site_menu_interface(db) :
                         get_info = func.__doc__ if func else "Функция модуля documentation не найдена"
                     elif choise_admin.startswith("api : ") :
                         clear_string = choise_admin.replace("api : ",'')
-                        import translater,get_photos_dog_random,super_hero_api,GET_IP
+                        import translater,get_photos_dog_random,super_hero_api
                         func = getattr(translater,clear_string,None) or getattr(get_photos_dog_random,clear_string,None) or getattr(super_hero_api,clear_string,None)
                         get_info = func.__doc__ if func else "Функция api не найдена"
                     st.info(get_info)
