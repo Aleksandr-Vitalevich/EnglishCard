@@ -20,8 +20,8 @@ class words(Base) :
     words_russian = Column(String(255),nullable=False)
 class user_words(Base) :
     __tablename__ = "user_words"
-    user_id = Column(Integer,ForeignKey('users.user_id'),primary_key=True,nullable=False)
-    word_id = Column(Integer,ForeignKey('words.word_id'),primary_key=True,nullable=False)
+    user_id = Column(Integer,ForeignKey('users.user_id',ondelete="CASCADE"),primary_key=True,nullable=False)
+    word_id = Column(Integer,ForeignKey('words.word_id',ondelete="CASCADE"),primary_key=True,nullable=False)
     status = Column(String(50),nullable=False)
 class learning_stats(Base) :
     __tablename__ = "learning_stats"
