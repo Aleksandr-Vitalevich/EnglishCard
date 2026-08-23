@@ -3,6 +3,7 @@ from sqlalchemy.orm import declarative_base,sessionmaker,aliased
 from sqlalchemy.exc import SQLAlchemyError
 import psycopg2
 import json
+from security import hash_password, check_password, generate_secure_password
 
 Base = declarative_base()
 
@@ -189,12 +190,21 @@ class BD_MANAGER :
             with self.Session() as session :
                 query_check_base = session.query(users).count()
                 if query_check_base == 0 :
+                    root_password = generate_secure_password()
+                    hash_root_password = hash_password(root_password)
+
                     add_root = users(
                         name = "root",
-                        password = "root",
+                        password = hash_root_password,
                     )
                     session.add(add_root)
+                    session.commit()
+                    print("\n" + "="*25)
                     print(f'Пользователь root добавлен в базу ')
+                    print(f"Пароль для входа {root_password}")
+                    print(f"Обязательно скопируйте его")
+                    print("\n" + "="*25)
+
 
                 clear_name = name.strip().lower()
                 query_check = session.query(users).filter_by(name=clear_name).first()
@@ -202,9 +212,12 @@ class BD_MANAGER :
                 if query_check :
                     print(f'Пользователь {clear_name} уже есть в базе')
                     return 'exists'
+
+                hash_user_password = hash_password(password.strip())
+
                 new_user = users(
                     name = clear_name,
-                    password = password.strip(),
+                    password = hash_user_password,
                 )
                 session.add(new_user)
                 session.commit()
@@ -247,7 +260,7 @@ class BD_MANAGER :
                 if not query_check :
                     print('Пользователь не найден в базе')
                     return None
-                if query_check.password == password.strip() :
+                if check_password(password.strip(),query_check.password) :
                     print(f'Добро пожаловать {name}')
                     return query_check
                 else :
@@ -362,6 +375,18 @@ class BD_MANAGER :
                         learning_stats,words.word_id == learning_stats.word_id
                     ).filter(learning_stats.user_id == user_id).all()
                 return query
+        except SQLAlchemyError as e :
+            print(f"Ошибка выполнения запроса {e}")
+            return []
+        
+    def get_users_admin(self) :
+        '''Функция получения списка пользователей'''
+        try :
+            with self.Session() as session :
+                query_get_users = session.query(
+                    users.user_id.label("id Пользователя"),
+                    users.name.label("Ник пользователя")).all()
+                return query_get_users
         except SQLAlchemyError as e :
             print(f"Ошибка выполнения запроса {e}")
             return []

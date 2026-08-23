@@ -93,6 +93,7 @@ def site_menu_interface(db) :
         menu_buttons.insert(2, {"label": "🗑️ Удалить слово", "page": "delete"})
         menu_buttons.insert(3, {"label" : "👥 Добавить пользователя","page" : "add_user"})
         menu_buttons.insert(4, {"label" : "👤❌ Удалить пользователя","page" : "delete_user"})
+        menu_buttons.insert(5, {"label" : "👥 Показать пользователей","page" : "show_users"})
 
     col = st.columns(len(menu_buttons))
     for i,btn in enumerate(menu_buttons) :
@@ -100,11 +101,7 @@ def site_menu_interface(db) :
             st.session_state.menu_page = btn["page"]
             st.rerun()
 
-    st.divider()
-
-    scheme = st.button("🛢️ Схема базы данных",use_container_width=True)
-    if scheme :
-        st.session_state.menu_page = "scheme"
+    
 
     match st.session_state.menu_page :
         case "study" :
@@ -295,13 +292,17 @@ def site_menu_interface(db) :
             elif study_choise == "Напиши имя героя" :
                 st.subheader("Имя героя")
                 if st.session_state.current_hero is None :
-                    st.session_state.current_hero = get_info_super_hero(randint(1,731))
+                    with st.spinner("Выбираем героя") :
+                        while True :
+                            hero = get_info_super_hero(randint(1,731))
+                            hero_photo = hero.get("photo")
+                            if hero_photo and isinstance(hero_photo,str) and hero_photo.startswith("http") :
+                                st.session_state.current_hero = hero
+                                break
                     st.session_state.wrong_attempts = 0
-                hero_photo = st.session_state.current_hero.get("photo")
-                if hero_photo :
-                    st.image(hero_photo,width=400)
-                else :
-                    st.warning("У этого героя нет фото")
+                current_photo = st.session_state.current_hero.get("photo")
+                if current_photo :
+                    st.image(current_photo,width=400)
                 st.write("---")
                 st.markdown("### Вы можете прослушать произношение")
                 local_audio_path = "hero_voice.mp3"
@@ -340,24 +341,41 @@ def site_menu_interface(db) :
                         st.rerun()
                 else :
                     st.success(f"Вы ввели верное имя {st.session_state.current_hero.get("name",'')}")
-                    save_picture = st.button("Сохранить картинку на яндекс диск",use_container_width=True)
+                    save_mode = st.radio(
+                        "Выберите способ сохранения картинки",
+                        ["На Яндекс диск","На компьютер"],
+                        horizontal=True
+                    )
+                    save_picture = st.button("Сохранить картинку",use_container_width=True)
                     if save_picture :
-                        with st.spinner("Загрузка картинки на облако") :
-                            try :
-                                if isinstance(hero_photo,str) and hero_photo.startswith("http"):
-                                    img_bytes = requests.get(hero_photo).content
-                                else :
-                                    img_bytes = hero_photo
-                                path = f"disk:/Hero/{hero_name}.jpg"
+                        try :
+                            if isinstance(current_photo,str) and current_photo.startswith("http"):
+                                img_bytes = requests.get(current_photo).content
+                            else :
+                                img_bytes = current_photo
+                            filename = f"{hero_name}.jpg"
 
-                                save_hero_picture = YandexDiskService(y_token=ydt)
-                                res = save_hero_picture.send_file(img_bytes,path)
+                            if save_mode == "На Яндекс диск" :
+                                with st.spinner("Загрузка картинки на облако"):
+                                    cloud_path = f"disk:/Hero/{filename}"
+                                    sleep(1)
+                                    save_hero_picture = YandexDiskService(y_token=ydt)
+                                    res = save_hero_picture.send_file(img_bytes,cloud_path)
                                 if res == 201 or res == 200 :
                                     st.info("Картинка успешно сохранена на Яндекс диск")
                                 else :
                                     st.error(f"Ошибка загрузки статус ответа яндекса {res}")
-                            except Exception as e :
-                                st.error(f"Не удалось сохранить файл {e}")
+                            else :
+                                with st.spinner("Загрузка картинки на компьютер") :
+                                    local_folder = "downloads"
+                                    os.makedirs(local_folder,exist_ok=True)
+                                    local_path = os.path.join(local_folder,filename)
+                                    with open(local_path,"wb") as file :
+                                        file.write(img_bytes)
+                                    sleep(1)
+                                    st.info("Картинка успешно сохранена на компьютер")
+                        except Exception as e :
+                            st.error(f"Не удалось сохранить файл {e}")
                     if st.button("Следующий герой",key="next_after_success",use_container_width=True) :
                         st.session_state.current_hero = None
                         st.session_state.answer_correct = False
@@ -467,9 +485,6 @@ def site_menu_interface(db) :
                         st.markdown("Последний тест")
                         st.dataframe(df,use_container_width=True)
 
-        case "scheme" :
-            st.subheader("Схема")
-            st.image("Курсовая.drawio.png")
         case "enter" :
             st.subheader("👤 Авторизация")
             user_name = st.text_input("Введите ваш логин :")
@@ -535,14 +550,26 @@ def site_menu_interface(db) :
                     
                     get_info_ui = get_ui_documentation(choise)
                     st.markdown(get_info_ui)
+
+                st.divider()
+                st.write("---")
+                if "show_db_scheme" not in st.session_state :
+                    st.session_state.show_db_scheme = False    
+                scheme = "Скрыть 🛢️ Схему базы данных" if st.session_state.show_db_scheme else "Показать 🛢️ Схему базы данных"
+                if st.button(scheme,use_container_width=True) :
+                    st.session_state.show_db_scheme = not st.session_state.show_db_scheme
+                    st.rerun()
+                if st.session_state.show_db_scheme :
+                    st.image("Курсовая.drawio.png",use_container_width=True)
             else :
                 choise = st.selectbox(
                     "Выберите функцию для получения документации",
                     ["Изучение", "Добавить слово","Удалить слово", 
-                     "Статистика", "Документация", "Схема базы данных","Вход","Выход"]
+                     "Статистика", "Документация","Вход","Выход"]
                 )
                 get_info_ui = get_ui_documentation(choise)
                 st.markdown(get_info_ui)
+
         case "translater" :
             st.subheader("Перевод слова")
             direction_choise = st.radio(
@@ -607,6 +634,14 @@ def site_menu_interface(db) :
                                 st.error('Ошибка удаления')
                         else :
                             st.info("Необходимо заполнить одно или более полей")
+        case "show_users" :
+            st.subheader("Список пользователей")
+            with st.spinner("Загружаем список пользователей"):
+                get_all_users = db.get_users_admin()
+            if get_all_users :
+                import pandas as pd
+                df = pd.DataFrame(get_all_users)
+                st.dataframe(df,use_container_width=True)
         case _ :
             st.info("Выберите меню тренажера ")   
 
