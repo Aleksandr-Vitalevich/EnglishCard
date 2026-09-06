@@ -10,6 +10,7 @@ from re import sub
 from gtts import gTTS
 from GET_IP import *
 import os
+from streamlit_carousel import carousel
 load_dotenv()
 ipify = os.getenv('IPIFY_TOKEN')
 from YANDEX_DISK import *
@@ -72,14 +73,37 @@ def site_menu_interface(db) :
             st.session_state.current_ip = "127.0.0.1"
             st.session_state.current_city = "Не определен"
             print(f"Ошибка IP: {e}")
-    
+        db.save_info_login_ip(user_id = st.session_state.current_user_id,ip_user = st.session_state.current_ip,user_city = st.session_state.current_city)
     st.sidebar.markdown(f"***Ваш ip {st.session_state.current_ip}***")
     st.sidebar.markdown(f"***Ваш Город {st.session_state.current_city}***")
+    import datetime
+    current_date = datetime.date.today().strftime("%d-%m-%Y")
+    current_time = datetime.datetime.now().strftime("%H:%M")
+    st.sidebar.markdown(f"***Текущая дата {current_date}***")
+    st.sidebar.markdown(f"***Текущее время {current_time}***")
+    if "show_ip_history" not in st.session_state :
+            st.session_state.show_ip_history = False
+    if st.sidebar.button("Показать Мои сессии",use_container_width=True) :
+        st.session_state.show_ip_history = not st.session_state.show_ip_history
+    if st.session_state.show_ip_history :
+        import pandas as pd
+        st.markdown("### Ваша история сессий")
+        try :
+            raw_data = db.show_info_login_ip(st.session_state.current_user_id)
+            df_view = pd.DataFrame(raw_data)
+            if not df_view.empty :
+                st.dataframe(df_view,use_container_width=True)
+            else :
+                st.info("История сессий в данный момент пуста")
+        except Exception as e :
+            st.error(f"Не удалось загрузить историю сессий {e}") 
+
     if st.sidebar.button("Выход",use_container_width=True) :
         st.session_state.current_ip = None
         st.session_state.current_city = None
         st.session_state.menu_page = "exit"
         st.rerun()
+    
 
     menu_buttons = [
         {"label": "📖 Изучение", "page": "study"},
@@ -647,7 +671,20 @@ def site_menu_interface(db) :
                     st.session_state.show_db_scheme = not st.session_state.show_db_scheme
                     st.rerun()
                 if st.session_state.show_db_scheme :
-                    st.image("Курсовая.drawio.png",use_container_width=True)
+                    st.markdown("***История БД***")
+                    carousel(items=[
+                        {
+                            "title" : "Cхема_БД",
+                            "text" : "Первая версия",
+                            "img" : "Cхема_БД _1_этап.drawio.png"
+                        },
+                        {
+                            "title" : "Cхема_БД",
+                            "text" : "Вторая версия добавили сохранение логирования ip",
+                            "img" : "Cхема_БД _2_этап.drawio.png"
+                        },
+                    ])
+                    #st.image("Cхема_БД _1_этап.drawio.png",use_container_width=True)
             else :
                 choise = st.selectbox(
                     "Выберите функцию для получения документации",
@@ -732,6 +769,6 @@ def site_menu_interface(db) :
         case _ :
             st.info("Выберите меню тренажера ")   
 
-if __name__ == "__main__" :
-    autorization_interface()
-    site_menu_interface()
+#if __name__ == "__main__" :
+#    autorization_interface()
+#    site_menu_interface()

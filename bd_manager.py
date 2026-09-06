@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import psycopg2
 import json
 from security import hash_password, check_password, generate_secure_password
+import datetime
 
 Base = declarative_base()
 
@@ -31,6 +32,13 @@ class learning_stats(Base) :
     correct_answers = Column(Integer,default=0,nullable=False)
     total_attempts = Column(Integer,default=0,nullable=False)
     last_reviewed = Column(DateTime,default=func.now(),onupdate=func.now())
+class ip_save(Base) :
+    __tablename__ = "ip_save"
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    ip = Column(String(20),nullable=True)
+    city = Column(String(255),nullable=True)
+    login_at = Column(DateTime,default=func.now(),nullable=False)
+    user_id = Column(Integer,ForeignKey("users.user_id",ondelete="CASCADE"),nullable=False)
 
 class BD_MANAGER :
     def __init__(self,user = None, password = None, host = None, port = None, db_name = None):
@@ -387,6 +395,35 @@ class BD_MANAGER :
                     users.user_id.label("id Пользователя"),
                     users.name.label("Ник пользователя")).all()
                 return query_get_users
+        except SQLAlchemyError as e :
+            print(f"Ошибка выполнения запроса {e}")
+            return []
+
+    def save_info_login_ip(self, user_id : int, ip_user :str = None,user_city : str = None) :
+        '''Функция сохраняет данные ip,город, дату и время входа конкретного пользователя'''
+        try :
+            with self.Session() as session :
+                save_info = ip_save(
+                    ip = ip_user,
+                    city = user_city,
+                    user_id = user_id
+                )
+                session.add(save_info)
+                session.commit()
+                print('Информация добавлена в базу')
+        except SQLAlchemyError as e:
+            print(f'Ошибка добавления записи {e}')
+
+    def show_info_login_ip(self,user_id : int) :
+        '''Функция возвращает информацию по входам пользователя'''
+        try :
+            with self.Session() as session :
+                show_query = session.query(
+                    ip_save.ip,
+                    ip_save.city,
+                    ip_save.login_at
+                ).where(ip_save.user_id == user_id).all()
+            return show_query
         except SQLAlchemyError as e :
             print(f"Ошибка выполнения запроса {e}")
             return []
