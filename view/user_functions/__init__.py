@@ -1,0 +1,2 @@
+from view.user_functions.translator import translate_words
+from view.user_functions.stats import run_user_stats_feature

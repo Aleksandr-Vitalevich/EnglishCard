@@ -24,12 +24,17 @@ def get_photos_random() :
                 return (None,None)
 
 if __name__ == "__main__" :
-
-    response_get_photo_url = requests.get('https://dog.ceo/api/breeds/image/random',timeout=4).json()['message']
-    breed = response_get_photo_url.split("/")
-    print(breed[-2])
-    #with open("test_api_dog.json",'w',encoding='utf-8') as file :
-    #    json.dump(response_get_photo_url,file,indent=4,ensure_ascii=False)
+    import os
+    import json
+    API_SERVICES_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.dirname(API_SERVICES_DIR)
+    test_json_path = os.path.join(BASE_DIR, "media_cache", "test_dog_data.json")
+    dog_data = {"status": "success", "message": "https://dog.ceo/api/breeds/image/random"}
+    with open(test_json_path, 'w', encoding='utf-8') as file:
+        json.dump(dog_data, file, indent=4, ensure_ascii=False)
+    #response_get_photo_url = requests.get('https://dog.ceo/api/breeds/image/random',timeout=4).json()['message']
+    #breed = response_get_photo_url.split("/")
+    #print(breed[-2])
     #print("Старт теста")
     #progress_line = tqdm(range(1,5),desc="Скачивание любой породы",unit="шт")
     #for line in progress_line :

@@ -1,0 +1,5 @@
+from api_services.get_photos_dog_random import get_photos_random
+from api_services.super_hero_api import get_info_super_hero
+from api_services.translater import translate_word
+from api_services.GET_IP import GET_IP
+from api_services.YANDEX_DISK import YandexDiskService

@@ -1,44 +1,11 @@
-from sqlalchemy import create_engine,Column,Integer,String,Numeric,ForeignKey,DECIMAL,DateTime,func
-from sqlalchemy.orm import declarative_base,sessionmaker,aliased
+from db_manager.models import Base,users,words,user_words,learning_stats,ip_save,api_points
+from sqlalchemy.orm import sessionmaker,aliased
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import create_engine
 import psycopg2
 import json
-from security import hash_password, check_password, generate_secure_password
+from utils.security import hash_password, check_password, generate_secure_password
 import datetime
-
-Base = declarative_base()
-
-class users(Base) :
-    __tablename__ = "users"
-    user_id = Column(Integer,primary_key=True,autoincrement=True)
-    name = Column(String(255),unique=True, nullable=False)
-    password = Column(String(255),nullable=False)
-    counter_point = Column(Integer,default=0)
-class words(Base) :
-    __tablename__ = "words"
-    word_id = Column(Integer,primary_key=True,autoincrement=True)
-    words_english = Column(String(255),nullable=False)
-    words_russian = Column(String(255),nullable=False)
-class user_words(Base) :
-    __tablename__ = "user_words"
-    user_id = Column(Integer,ForeignKey('users.user_id',ondelete="CASCADE"),primary_key=True,nullable=False)
-    word_id = Column(Integer,ForeignKey('words.word_id',ondelete="CASCADE"),primary_key=True,nullable=False)
-    status = Column(String(50),nullable=False)
-class learning_stats(Base) :
-    __tablename__ = "learning_stats"
-    id = Column(Integer,primary_key=True,autoincrement=True)
-    user_id = Column(Integer,ForeignKey("users.user_id",ondelete="CASCADE"),nullable=False)
-    word_id = Column(Integer,ForeignKey("words.word_id",ondelete="CASCADE"),nullable=False)
-    correct_answers = Column(Integer,default=0,nullable=False)
-    total_attempts = Column(Integer,default=0,nullable=False)
-    last_reviewed = Column(DateTime,default=func.now(),onupdate=func.now())
-class ip_save(Base) :
-    __tablename__ = "ip_save"
-    id = Column(Integer,primary_key=True,autoincrement=True)
-    ip = Column(String(20),nullable=True)
-    city = Column(String(255),nullable=True)
-    login_at = Column(DateTime,default=func.now(),nullable=False)
-    user_id = Column(Integer,ForeignKey("users.user_id",ondelete="CASCADE"),nullable=False)
 
 class BD_MANAGER :
     def __init__(self,user = None, password = None, host = None, port = None, db_name = None):
@@ -281,6 +248,7 @@ class BD_MANAGER :
     def get_card_random(self,user_id) :
         '''Функция получения случайного слова
         На вход функция получает user_id id - пользователя -> int'''
+        from sqlalchemy import func
         try :
             with self.Session() as session :
                 get_word = session.query(words).join(user_words).filter(user_words.user_id == user_id,user_words.status == "Изучается").order_by(func.random()).first()
@@ -298,6 +266,7 @@ class BD_MANAGER :
     def get_wrong_choise(self,correct_translation : str) :
         '''Получение 3х неправильных слов , нужно для режима тест
         Функция принимает перевод слова , чтобы не получить два или более одинаковых слов в выборке'''
+        from sqlalchemy import func
         try :
             with self.Session() as session :
                 wrong_words_query = session.query(words).filter(words.words_russian != correct_translation).order_by(func.random()).limit(3).all()
@@ -427,3 +396,59 @@ class BD_MANAGER :
         except SQLAlchemyError as e :
             print(f"Ошибка выполнения запроса {e}")
             return []
+
+    def get_api_points(self,user_id : int,simulator_name : str) :
+        '''Функция возвращает информацию по количеству очков в конкретном тренажере'''
+        try :
+            with self.Session() as session :
+                show_point_user_query = session.query(
+                    api_points.points
+                ).where(api_points.name_simulator == simulator_name,
+                        api_points.user_id == user_id).first()
+            return show_point_user_query[0] if show_point_user_query else 0
+        except SQLAlchemyError as e :
+            print(f'Ошибка выполнения запроса {e}')
+            return []
+
+    def get_api_info(self,user_id : int) :
+        '''Функция возвращает все названия симуляторов , что есть в базе пользователя'''
+        try :
+            with self.Session() as session :
+                show_info_simulator_query = session.query(
+                    api_points.name_simulator
+                ).where(api_points.user_id == user_id).all()
+                unique_simulators = list({row[0] for row in show_info_simulator_query})
+            return unique_simulators
+        except SQLAlchemyError as e :
+            print(f"Ошибка выполнения запроса {e}")
+            return []
+
+    def add_api_points(self,user_id : int,simulator_name : str) :
+        '''Функция увеличивает очки по конкретному тренажеру'''
+        query = self.get_api_points(user_id,simulator_name)
+        if query == 0:
+            try :
+                with self.Session() as session :
+                    add_point_query = api_points(
+                        name_simulator = simulator_name,
+                        user_id = user_id,
+                        points = 1
+                    )
+                    session.add(add_point_query)
+                    session.commit()
+                    print('Информация добавлена в базу')
+            except SQLAlchemyError as e:
+                print(f'Ошибка добавления записи {e}')
+        else :
+            try :
+                with self.Session() as session :
+                    update_query = session.query(api_points).filter(
+                        api_points.name_simulator == simulator_name,
+                        api_points.user_id == user_id
+                    ).first()
+                    if update_query :
+                        update_query.points += 1
+                        session.commit()
+                        print('Информация добавлена в базу')
+            except SQLAlchemyError as e:
+                print(f'Ошибка добавления записи {e}')

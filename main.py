@@ -1,22 +1,23 @@
 import streamlit as st
-from site_view import *
-from bd_manager import *
-from dotenv import load_dotenv
+from view.site_view import *
+from db_manager.bd_manager import *
 import os
-from pathlib import Path
-load_dotenv()
+from db_manager.config import DB_USER,DB_PASSWORD,DB_HOST,DB_PORT,DB_NAME,FILE_JSON_PATH
+from view import autorization_interface
 
+st.set_page_config(
+        page_title="EnglishCard",
+        layout="wide"
+        )
 if "db" not in st.session_state :
         st.session_state.db = BD_MANAGER(
-                user = os.getenv("DB_USER"),
-                password = os.getenv("DB_PASSWORD"),
-                host = os.getenv("DB_HOST"),
-                port = os.getenv("DB_PORT"),
-                db_name = os.getenv("DB_NAME")
+                user = DB_USER,
+                password = DB_PASSWORD,
+                host = DB_HOST,
+                port = DB_PORT,
+                db_name = DB_NAME,
         )
-
-        file_json_path = Path("words_first_data.json")
-        st.session_state.db.add_words_to_bd(file_json_path)
+        st.session_state.db.add_words_to_bd(FILE_JSON_PATH)
         print("База данных успешно подключена")
 
 db = st.session_state.db
@@ -31,7 +32,6 @@ if "is_authenticated" not in st.session_state:
     st.session_state.current_city = None
     st.session_state.current_ip = None
     st.session_state.answer_correct = False
-
 if not st.session_state.is_authenticated:
     autorization_interface(db)
 else:

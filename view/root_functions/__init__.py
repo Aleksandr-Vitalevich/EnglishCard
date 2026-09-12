@@ -1,0 +1,5 @@
+from view.root_functions.add_word import add_word_root
+from view.root_functions.delete_word import delete_word_root
+from view.root_functions.add_user import add_user_root
+from view.root_functions.delete_user import delete_user_root
+from view.root_functions.show_users import show_users_root
