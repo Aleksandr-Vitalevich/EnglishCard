@@ -24,6 +24,11 @@ def run_db_scheme_screen() :
                 "title" : "",
                 "text" : "",
                 "img" : "documentation/Cхема_БД _4_этап.drawio.png"
+            },
+            {
+                "title" : "",
+                "text" : "",
+                "img" : "webscrapping/manager_db/bd_scheme.drawio.png"
             }
         ]
     carousel(items=carousel_items,key="db_scheme_carousel",container_height=1200)
@@ -43,3 +48,7 @@ def run_db_scheme_screen() :
     with st.expander("📝 Почитать описание Этапа 4 (Таблица слов для городов)"):
         st.markdown("**Схема БД (Этап 4)**")
         st.info("Четвертая версия структуры таблиц, добавлена таблица для названий городов.")
+
+    with st.expander("📝 Почитать описание Этапа 5 (Таблица для скрапинга)"):
+        st.markdown("**Схема БД (Этап 5)**")
+        st.info("Независимая таблица для скрапинга статей на Sqlight")

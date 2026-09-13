@@ -108,6 +108,13 @@ def site_menu_interface(db) :
         case "show_users" :
             from view.root_functions.show_users import show_users_root
             show_users_root(db)
+        case "web_scraping" :
+            if st.session_state.current_user_name == "root" :
+                from webscrapping.tabs_scrapping.scrapping_main_view import main_scrapping
+                main_scrapping()
+            else :
+                from webscrapping.tabs_scrapping.tab3 import tab3_operation
+                tab3_operation()
 
         case _ :
             st.info("Выберите меню тренажера ")   

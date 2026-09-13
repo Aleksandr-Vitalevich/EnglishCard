@@ -1,0 +1,38 @@
+{
+    "Хабр": {
+        "url": "https://habr.com/ru/articles/",
+        "args": [
+            "article",
+            ".tm-title__link",
+            "href",
+            "time"
+        ]
+    },
+    "tproger": {
+        "url": "https://tproger.ru",
+        "args": [
+            "div.tp-new-design-post-card",
+            "a.tp-new-design-post-card__title",
+            "href",
+            "time"
+        ]
+    },
+    "dtf_games": {
+        "url": "https://dtf.ru/games",
+        "args": [
+            "div.content--short",
+            "a.content-comment",
+            "href",
+            "time"
+        ]
+    },
+    "Dev to": {
+        "url": "https://dev.to/?ysclid=mu08pec7rd465343494",
+        "args": [
+            "div.crayons-story",
+            "a.crayons-story__hidden-navigation-link",
+            "href",
+            "time"
+        ]
+    }
+}

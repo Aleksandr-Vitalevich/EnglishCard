@@ -23,6 +23,12 @@ import documentation.documentation as documentation_
 import documentation.db_scheme as db_scheme
 import documentation.code_scanner as code_scanner_
 
+import webscrapping.manager_data as manager_data
+
+import webscrapping.manager_db as manager_db
+
+import webscrapping.tabs_scrapping as tabs_scrapping
+
 def run_code_scanner_screen(db) :
     '''Модуль автоматического сканирования и документирования кода'''
     st.markdown('### Автоматический сканер модулей кода')
@@ -35,7 +41,8 @@ def run_code_scanner_screen(db) :
             "API сервисы",
             "Функции безопасности",
             "Функции отрисовки интерфейсы и логики работы с ним",
-            "Документация"
+            "Документация",
+            "Web Scrapping"
         ]
     )
     function_dict = {}
@@ -73,7 +80,13 @@ def run_code_scanner_screen(db) :
             inspect.getmembers(code_scanner_,predicate=inspect.isfunction)
         )
         function_dict = {name : func for name,func in all_documentation_func if not name.startswith("_")}
-
+    elif choise == "Web Scrapping" :
+        all_scrapping = (
+            inspect.getmembers(manager_data,predicate=inspect.isfunction) +
+            inspect.getmembers(manager_db,predicate=inspect.isfunction) +
+            inspect.getmembers(tabs_scrapping,predicate=inspect.isfunction)
+        )
+        function_dict = {name : func for name,func in all_scrapping if not name.startswith("_")}
     if function_dict :
         sorted_func_names = sorted(list(function_dict.keys()))
         selected_func_name = st.selectbox(

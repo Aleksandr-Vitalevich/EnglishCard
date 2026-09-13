@@ -1,0 +1,4 @@
+from webscrapping.tabs_scrapping.scrapping_main_view import main_scrapping
+from webscrapping.tabs_scrapping.tab1 import tab1_operation
+from webscrapping.tabs_scrapping.tab2 import tab2_operation
+from webscrapping.tabs_scrapping.tab3 import tab3_operation
