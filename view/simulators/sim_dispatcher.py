@@ -3,6 +3,7 @@ from view.simulators.sim_variants import run_variants_simulator
 from view.simulators.sim_writing import run_writing_simulator
 from view.simulators.sim_heroes import run_heroes_simulator
 from view.simulators.sim_dogs import run_dogs_simulator
+from view.simulators.sim_cities import run_cities_simulator
 
 def run_simulators_dispatcher(db) :
     '''Главный диспетчер режима обучения'''
@@ -13,7 +14,8 @@ def run_simulators_dispatcher(db) :
             "Выбор из 4х вариантов",
             "Письменный тест (ввести правильное слово)",
             "Напиши имя героя",
-            "Напиши породу собаки"
+            "Напиши породу собаки",
+            "Напиши город правильно"
             ],
         horizontal=True
         )
@@ -31,3 +33,6 @@ def run_simulators_dispatcher(db) :
 
         case "Напиши породу собаки" :
             run_dogs_simulator(db)
+
+        case "Напиши город правильно" :
+            run_cities_simulator(db)

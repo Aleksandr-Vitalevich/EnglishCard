@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<geo_data>
+    <!-- Европа -->
+    <city id="1" region="Europe">
+        <russian>Лондон</russian>
+        <english>London</english>
+    </city>
+    <city id="2" region="Europe">
+        <russian>Париж</russian>
+        <english>Paris</english>
+    </city>
+    <city id="3" region="Europe">
+        <russian>Рим</russian>
+        <english>Rome</english>
+    </city>
+    <city id="4" region="Europe">
+        <russian>Берлин</russian>
+        <english>Berlin</english>
+    </city>
+    <city id="5" region="Europe">
+        <russian>Мадрид</russian>
+        <english>Madrid</english>
+    </city>
+    <city id="6" region="Europe">
+        <russian>Вена</russian>
+        <english>Vienna</english>
+    </city>
+    <city id="7" region="Europe">
+        <russian>Прага</russian>
+        <english>Prague</english>
+    </city>
+    <city id="8" region="Europe">
+        <russian>Амстердам</russian>
+        <english>Amsterdam</english>
+    </city>
+    <city id="9" region="Europe">
+        <russian>Эдинбург</russian>
+        <english>Edinburgh</english>
+    </city>
+    <city id="10" region="Europe">
+        <russian>Лиссабон</russian>
+        <english>Lisbon</english>
+    </city>
+    <city id="11" region="Europe">
+        <russian>Афины</russian>
+        <english>Athens</english>
+    </city>
+    <city id="12" region="Europe">
+        <russian>Копенгаген</russian>
+        <english>Copenhagen</english>
+    </city>
+    <city id="13" region="Europe">
+        <russian>Стокгольм</russian>
+        <english>Stockholm</english>
+    </choice>
+    <city id="14" region="Europe">
+        <russian>Будапешт</russian>
+        <english>Budapest</english>
+    </city>
+    <city id="15" region="Europe">
+        <russian>Дублин</russian>
+        <english>Dublin</english>
+    </city>
+
+    <!-- Азия -->
+    <city id="16" region="Asia">
+        <russian>Токио</russian>
+        <english>Tokyo</english>
+    </city>
+    <city id="17" region="Asia">
+        <russian>Пекин</russian>
+        <english>Beijing</english>
+    </city>
+    <city id="18" region="Asia">
+        <russian>Сеул</russian>
+        <english>Seoul</english>
+    </city>
+    <city id="19" region="Asia">
+        <russian>Бангкок</russian>
+        <english>Bangkok</english>
+    </city>
+    <city id="20" region="Asia">
+        <russian>Сингапур</russian>
+        <english>Singapore</english>
+    </city>
+    <city id="21" region="Asia">
+        <russian>Дели</russian>
+        <english>Delhi</english>
+    </city>
+    <city id="22" region="Asia">
+        <russian>Стамбул</russian>
+        <english>Istanbul</english>
+    </city>
+    <city id="23" region="Asia">
+        <russian>Дубай</russian>
+        <english>Dubai</english>
+    </city>
+    <city id="24" region="Asia">
+        <russian>Куала-Лумпур</russian>
+        <english>Kuala Lumpur</english>
+    </city>
+    <city id="25" region="Asia">
+        <russian>Джакарта</russian>
+        <english>Jakarta</english>
+    </city>
+    <city id="26" region="Asia">
+        <russian>Эр-Рияд</russian>
+        <english>Riyadh</english>
+    </city>
+    <city id="27" region="Asia">
+        <russian>Манила</russian>
+        <english>Manila</english>
+    </city>
+
+    <!-- Америка -->
+    <city id="28" region="Americas">
+        <russian>Нью-Йорк</russian>
+        <english>New York</english>
+    </city>
+    <city id="29" region="Americas">
+        <russian>Вашингтон</russian>
+        <english>Washington</english>
+    </city>
+    <city id="30" region="Americas">
+        <russian>Лос-Анджелес</russian>
+        <english>Los Angeles</english>
+    </city>
+    <city id="31" region="Americas">
+        <russian>Чикаго</russian>
+        <english>Chicago</english>
+    </city>
+    <city id="32" region="Americas">
+        <russian>Торонто</russian>
+        <english>Toronto</english>
+    </city>
+    <city id="33" region="Americas">
+        <russian>Ванкувер</russian>
+        <english>Vancouver</english>
+    </city>
+    <city id="34" region="Americas">
+        <russian>Мехико</russian>
+        <english>Mexico City</english>
+    </city>
+    <city id="35" region="Americas">
+        <russian>Буэнос-Айрес</russian>
+        <english>Buenos Aires</english>
+    </city>
+    <city id="36" region="Americas">
+        <russian>Рио-де-Жанейро</russian>
+        <english>Rio de Janeiro</english>
+    </city>
+    <city id="37" region="Americas">
+        <russian>Лима</russian>
+        <english>Lima</english>
+    </city>
+    <city id="38" region="Americas">
+        <russian>Богота</russian>
+        <english>Bogota</english>
+    </city>
+
+    <!-- Африка и Ближний Восток -->
+    <city id="39" region="Africa">
+        <russian>Каир</russian>
+        <english>Cairo</english>
+    </city>
+    <city id="40" region="Africa">
+        <russian>Кейптаун</russian>
+        <english>Cape Town</english>
+    </city>
+    <city id="41" region="Africa">
+        <russian>Йоханнесбург</russian>
+        <english>Johannesburg</english>
+    </city>
+    <city id="42" region="Africa">
+        <russian>Найроби</russian>
+        <english>Nairobi</english>
+    </city>
+    <city id="43" region="Africa">
+        <russian>Касабланка</russian>
+        <english>Casablanca</english>
+    </city>
+    <city id="44" region="Africa">
+        <russian>Иерусалим</russian>
+        <english>Jerusalem</english>
+    </city>
+
+    <!-- Океания -->
+    <city id="45" region="Oceania">
+        <russian>Сидней</russian>
+        <english>Sydney</english>
+    </city>
+    <city id="46" region="Oceania">
+        <russian>Мельбурн</russian>
+        <english>Melbourne</english>
+    </city>
+    <city id="47" region="Oceania">
+        <russian>Окленд</russian>
+        <english>Auckland</english>
+    </city>
+
+    <!-- Дополнительные сложные топонимы для хардкора -->
+    <city id="48" region="Europe">
+        <russian>Кёльн</russian>
+        <english>Cologne</english>
+    </city>
+    <city id="49" region="Europe">
+        <russian>Мюнхен</russian>
+        <english>Munich</english>
+    </city>
+    <city id="50" region="Europe">
+        <russian>Женева</russian>
+        <english>Geneva</english>
+    </city>
+</geo_data>

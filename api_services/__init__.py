@@ -3,3 +3,4 @@ from api_services.super_hero_api import get_info_super_hero
 from api_services.translater import translate_word
 from api_services.GET_IP import GET_IP
 from api_services.YANDEX_DISK import YandexDiskService
+from api_services.file_parsers import read_file_json

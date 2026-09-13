@@ -20,8 +20,13 @@ def run_db_scheme_screen() :
                 "text" : "",
                 "img" : "documentation/Cхема_БД _3_этап.drawio.png"
             },
+            {
+                "title" : "",
+                "text" : "",
+                "img" : "documentation/Cхема_БД _4_этап.drawio.png"
+            }
         ]
-    carousel(items=carousel_items,key="db_scheme_carousel")
+    carousel(items=carousel_items,key="db_scheme_carousel",container_height=1200)
     st.write('---')
     with st.expander("📝 Почитать описание Этапа 1 (Базовая версия)"):
         st.markdown("**Схема БД (Этап 1)**")
@@ -32,5 +37,9 @@ def run_db_scheme_screen() :
         st.info("Вторая версия структуры: добавили полноценное логирование сессий пользователей, включая сохранение IP-адреса, города, даты и времени входа.")
 
     with st.expander("📝 Почитать описание Этапа 3 (Таблица сохранения очков для сторонних тренажеров)"):
-        st.markdown("**Схема БД (Этап 1)**")
+        st.markdown("**Схема БД (Этап 3)**")
         st.info("Третья версия структуры таблиц, добавлен функционал сохранения очков для сторонних тренажеров.")
+
+    with st.expander("📝 Почитать описание Этапа 4 (Таблица слов для городов)"):
+        st.markdown("**Схема БД (Этап 4)**")
+        st.info("Четвертая версия структуры таблиц, добавлена таблица для названий городов.")

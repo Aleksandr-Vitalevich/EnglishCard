@@ -8,6 +8,7 @@ import api_services.get_photos_dog_random as get_photos_dog_random
 import api_services.super_hero_api as super_hero_api
 import api_services.translater as translater
 import api_services.YANDEX_DISK as YANDEX_DISK
+import api_services.file_parsers as file_parsers
 
 import utils.security as security
 
@@ -48,7 +49,8 @@ def run_code_scanner_screen(db) :
             inspect.getmembers(get_photos_dog_random,predicate=inspect.isfunction) +
             inspect.getmembers(super_hero_api,predicate=inspect.isfunction) +
             inspect.getmembers(translater,predicate=inspect.isfunction) +
-            inspect.getmembers(YANDEX_DISK,predicate=inspect.ismethod)
+            inspect.getmembers(YANDEX_DISK,predicate=inspect.ismethod) +
+            inspect.getmembers(file_parsers,predicate=inspect.isfunction)
         )
         function_dict = {name : func for name,func in all_api_funcs if not name.startswith("_")}
     elif choise == "Функции безопасности" :

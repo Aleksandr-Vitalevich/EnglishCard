@@ -62,6 +62,7 @@ def site_menu_interface(db) :
         st.session_state.current_hero = None
         st.session_state.answer_correct = False
         st.session_state.menu_page = "main"
+        st.session_state.current_geo_city = None
         st.rerun()
 
     menu_buttons = get_menu_buttons(st.session_state.current_user_name)

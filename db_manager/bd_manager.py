@@ -1,4 +1,4 @@
-from db_manager.models import Base,users,words,user_words,learning_stats,ip_save,api_points
+from db_manager.models import Base,users,words,user_words,learning_stats,ip_save,api_points,cities_words
 from sqlalchemy.orm import sessionmaker,aliased
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import create_engine
@@ -18,35 +18,39 @@ class BD_MANAGER :
             self.Session = sessionmaker(bind=self.engine)
         except SQLAlchemyError as e :
             print(f'Ошибка соединения {e} ')
-
-    def read_file_json(self,path) :
-        '''Функция для чтения файлов формата json
-        Принимает путь к фвйлу'''
-        with open(path,'r',encoding='utf-8') as file :
-            file_read = json.load(file)
-            return file_read
         
-    def add_words_to_bd(self,path) :
+    def add_words_to_bd(self,path : str, file_type : str) :
         '''Функция наполнения базы данных словами из файла
         Функция принимает путь и передает его в функцию чтения файла
         '''
         try :
             with self.Session() as session :
-                words_count = session.query(words).count()
-                if words_count > 0 :
-                    print("В базе данных уже есть слова из этого файла. Загрузите другой файл")
+                match file_type :
+                    case "json" :
+                        words_count = session.query(words).count()
+                        if words_count > 0 :
+                            print("В базе данных уже есть слова из этого файла. Загрузите другой файл")
+                            return True
+                        from api_services.file_parsers import read_file_json
+                        file = read_file_json(path)
+                        model_class = words
+                    case "xml" :
+                        cities_count = session.query(cities_words).count()
+                        if cities_count > 0 :
+                            print("В базе данных уже есть слова из этого файла. Загрузите другой файл")
+                            return True
+                        from api_services.file_parsers import read_xml
+                        file = read_xml(path)
+                        model_class = cities_words
+                    case _ :
+                        print(f'Неизвестный тип файла {file_type}')
+                        return False
+                if file :
+                    session.bulk_insert_mappings(model_class,file)
+                    session.commit()
+                    print('Успех, записи успешно добавлены')
                     return True
-                 
-                file = self.read_file_json(path)
-                for line in file :
-                    new_word = words(
-                    words_english = line.get("words_english"),
-                    words_russian = line.get("words_russian"),
-                    )
-                    session.add(new_word)
-                session.commit()
-            print('Успех, записи успешно добавлены')
-            return True
+                return False
         except SQLAlchemyError as e :
             print(f"Ошибка добавления записи {e}")
             return None
@@ -452,3 +456,14 @@ class BD_MANAGER :
                         print('Информация добавлена в базу')
             except SQLAlchemyError as e:
                 print(f'Ошибка добавления записи {e}')
+
+    def get_random_city(self) :
+        '''Функция возвращает случайный город из таблицы cities_words'''
+        from sqlalchemy import func
+        try :
+            with self.Session() as session :
+                random_city = session.query(cities_words).order_by(func.random()).first()
+                return random_city
+        except SQLAlchemyError as e :
+                    print(f"Ошибка выполнения запроса {e}")
+                    return None

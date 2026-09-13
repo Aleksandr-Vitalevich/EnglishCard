@@ -14,6 +14,11 @@ class words(Base) :
     word_id = Column(Integer,primary_key=True,autoincrement=True)
     words_english = Column(String(255),nullable=False)
     words_russian = Column(String(255),nullable=False)
+class cities_words(Base) :
+    __tablename__ = "cities_words"
+    word_id = Column(Integer,primary_key=True,autoincrement=True)
+    words_english = Column(String(255),nullable=False)
+    words_russian = Column(String(255),nullable=False)
 class user_words(Base) :
     __tablename__ = "user_words"
     user_id = Column(Integer,ForeignKey('users.user_id',ondelete="CASCADE"),primary_key=True,nullable=False)
@@ -37,7 +42,6 @@ class ip_save(Base) :
     login_at = Column(DateTime,default=func.now(),nullable=False)
     user_id = Column(Integer,ForeignKey("users.user_id",ondelete="CASCADE"),nullable=False)
 class api_points(Base) :
-    from sqlalchemy import func
     __tablename__ = "api_points"
     id = Column(Integer,primary_key=True,autoincrement=True)
     name_simulator = Column(String(255),nullable=False)

@@ -3,3 +3,4 @@ from view.simulators.sim_writing import run_writing_simulator
 from view.simulators.sim_heroes import run_heroes_simulator
 from view.simulators.sim_dogs import run_dogs_simulator
 from view.simulators.sim_dispatcher import run_simulators_dispatcher
+from view.simulators.sim_cities import run_cities_simulator
